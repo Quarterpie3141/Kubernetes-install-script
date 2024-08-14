@@ -34,6 +34,8 @@ sudo apt update
 sudo apt upgrade -y
 print_success "Done!"
 
+sleep 1
+
 print_info "Disabling swap..." 1
 if sudo swapon --show | grep -q '^'; then
     sudo sed -i '/swap/d' /etc/fstab
@@ -43,6 +45,8 @@ else
     print_success "No active swap space found."
 fi
 print_success "Done!"
+
+sleep 1
 
 print_info "Loading kernel modules..." 1
 if lsmod | grep -q "^br_netfilter"; then
@@ -54,6 +58,8 @@ else
 fi
 print_success "Done!"
 
+sleep 1
+
 print_info "Enabling IPv4 packet forwarding" 1
 if sysctl net.ipv4.ip_forward | grep -q 'net.ipv4.ip_forward = 1'; then
     print_success "IPv4 packet forwarding is already enabled."
@@ -63,9 +69,13 @@ else
 fi
 print_success "Done!"
 
+sleep 1
+
 print_info "Installing UFW" 1
 sudo apt install -y ufw
 print_success "Done!"
+
+sleep 1
 
 print_info "Setting up firewall settings" 1
 print_info "Allowing Kubernetes API server" 0
@@ -84,6 +94,8 @@ print_info "Allowing NodePort Services" 0
 sudo ufw allow 30000:32767/tcp
 print_success "Done!"
 
+sleep 1
+
 print_info "Installing CRI-O" 1
 sudo apt-get install -y software-properties-common curl apt-transport-https ca-certificates gpg
 sudo curl -fsSL https://pkgs.k8s.io/addons:/cri-o:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/cri-o-apt-keyring.gpg
@@ -94,7 +106,11 @@ print_info "Enabling CRI-O" 0
 sudo systemctl start crio.service
 print_success "Done!"
 
+sleep 1
+
 print_info "Installing Kubernetes" 1
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 sudo apt-get install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
 sudo systemctl enable --now kubelet
