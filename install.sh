@@ -1,8 +1,9 @@
 #!/bin/bash
 
 set -e
+
 print_info() {
-    if [$2 -eq 1]; then
+    if [ "$2" -eq 1 ]; then
         printf "\n\n\n"
     fi
     tput setab 6 && tput setaf 0
@@ -18,12 +19,6 @@ print_success() {
     printf "\n"
 }
 
-#progress_indicator & indicator_pid=$!
-
-#kill $indicator_pid
-
-#wait $indicator_pid 2>/dev/null
-
 printf "Starting the installation process in \n"
 for i in {1..5}; do
     printf "$((6-i))"
@@ -35,14 +30,11 @@ for i in {1..5}; do
 done
 
 print_info "Updating packages..." 1
-
 sudo apt update
 sudo apt upgrade -y
 print_success "Done!"
 
-
 print_info "Disabling swap..." 1
-
 if sudo swapon --show | grep -q '^'; then
     sudo sed -i '/swap/d' /etc/fstab
     sudo cat /etc/fstab
@@ -62,8 +54,7 @@ else
 fi
 print_success "Done!"
 
-print_info "Enabling ipv4 packet forwarding" 1
-
+print_info "Enabling IPv4 packet forwarding" 1
 if sysctl net.ipv4.ip_forward | grep -q 'net.ipv4.ip_forward = 1'; then
     print_success "IPv4 packet forwarding is already enabled."
 else
@@ -72,7 +63,7 @@ else
 fi
 print_success "Done!"
 
-print_info "Installing ufw" 1
+print_info "Installing UFW" 1
 sudo apt install -y ufw
 print_success "Done!"
 
@@ -91,7 +82,6 @@ print_info "Allowing kube-proxy" 0
 sudo ufw allow 10256/tcp
 print_info "Allowing NodePort Services" 0
 sudo ufw allow 30000:32767/tcp
-print_info "Allowing NodePort Services" 0
 print_success "Done!"
 
 print_info "Installing CRI-O" 1
@@ -108,7 +98,6 @@ print_info "Installing Kubernetes" 1
 sudo apt-get install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
 sudo systemctl enable --now kubelet
-
 print_success "Done!"
 
 print_success "Kubeadm is ready to use"
