@@ -2,7 +2,7 @@
 
 set -e
 print_info() {
-    if [$2 -e 1] then
+    if [$2 -eq 1]; then
         printf "\n\n\n"
     fi
     tput setab 6 && tput setaf 0
