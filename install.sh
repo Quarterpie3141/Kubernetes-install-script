@@ -137,4 +137,8 @@ sleep 1
 sudo systemctl enable --now kubelet
 print_success "Done!"
 
+print_info "Pulling required config images" 1
+kubeadm config images pull 
+print_success "Done!"
+
 print_success "Kubeadm is ready to use"
