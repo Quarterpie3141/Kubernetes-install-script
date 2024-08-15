@@ -19,6 +19,58 @@ print_success() {
     printf "\n"
 }
 
+echo "Starting install script"
+
+#if [[ "$is_control_plane" =~ ^([nN][oO]?|[nN])$ ]]; then
+#fi
+
+#read -p "Is this node a control plane(Y/n):" is_control_plane
+#is_control_plane=${is_control_plane:-Y}
+#if [[ "$is_control_plane" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+#    read -p "did you want to set up a control plane endpoint [--control-plane-endpoint]? (y/N):" control_plane_endpoint
+#    control_plane_endpoint=${control_plane_endpoint:-N}
+#    if [[ "$is_control_plane" =~ ^([nN][oO]?|[nN])$ ]]; then
+#       read -p "enter your endpoint address (ip address, domain name)" endpoint_address
+#    fi
+#fi
+
+#read -p "what version of kubernates are you using(v1.31)" kubernetes_version
+#kubernetes_version=${kubernetes_version:-v1.31}
+#
+#read -p "what container runtime are you using[cri-o | docker | containerd](cri-o)" container_runtime
+#echo "kubernetes will use the container runtime interface CRI, by default,if you are using the docker container runtime, please manually configure the cri-dockerd CRI"
+#
+#container_runtime=${container_runtime:-cri-o}
+#
+#case "$container_runtime" in
+#    cri-o)
+#        echo "You selected CRI-O as the container runtime."
+#        read -p "What version of CRI-O are you using(v1.30)" cri_o_vers
+#        ;;
+#    docker)
+#        echo "You selected Docker as the container runtime."
+#
+#        ;;
+#    containerd)
+#        echo "You selected Containerd as the container runtime."
+#
+#        ;;
+#    *)
+#        echo "Invalid input. Please choose between cri-o, docker, or containerd."
+#        exit 1  
+#        ;;
+#esac
+#
+#
+#if [[ "$is_control_plane" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+#    read -p "what container container network interface(CNI) are you using [calcio | other](calico):" cni
+#    read -p "what is your pod network CIDR[--pod-network-cidr] (192.168.0.0/16)" cni_cidr
+#    read -p "did you want to taint this control plane?(y/N)" is_tainted
+#fi
+#
+#read -p "what are your desired node ports?(30000:32767/tcp)" node_ports
+
+
 printf "Starting the installation process in \n"
 for i in {1..5}; do
     printf "$((6-i))"
@@ -107,6 +159,12 @@ print_info "Allowing kube-proxy" 0
 sudo ufw allow 10256/tcp
 printf "\n"
 sleep 0.5
+#if [[ "$cni" =~ ^(calico)$ ]]; then
+    print_info "Allowing BIRD" 0
+    sudo ufw allow 179/tcp
+    printf "\n"
+    sleep 0.5
+#fi
 print_info "Allowing NodePort Services" 0
 sudo ufw allow 30000:32767/tcp
 print_success "Done!"
