@@ -40,9 +40,11 @@ print_info "Disabling swap..." 1
 if sudo swapon --show | grep -q '^'; then
     sudo sed -i '/swap/d' /etc/fstab
     sudo cat /etc/fstab
+    sleep 1
     sudo swapoff -a
 else
     print_success "No active swap space found."
+    sleep 1
 fi
 print_success "Done!"
 
@@ -54,6 +56,7 @@ if lsmod | grep -q "^br_netfilter"; then
 else
     echo "br_netfilter" | sudo tee -a /etc/modules
     sudo cat /etc/modules
+    sleep 1
     sudo modprobe br_netfilter
 fi
 print_success "Done!"
@@ -66,6 +69,7 @@ if sysctl net.ipv4.ip_forward | grep -q 'net.ipv4.ip_forward = 1'; then
 else
     echo "net.ipv4.ip_forward=1" | sudo tee -a /etc/sysctl.conf
     sudo sysctl -p
+    sleep 1
 fi
 print_success "Done!"
 
@@ -78,18 +82,31 @@ print_success "Done!"
 sleep 1
 
 print_info "Setting up firewall settings" 1
+printf "\n"
 print_info "Allowing Kubernetes API server" 0
 sudo ufw allow 6443/tcp
+printf "\n"
+sleep 0.5
 print_info "Allowing etcd server client API" 0
 sudo ufw allow 2379:2380/tcp
+printf "\n"
+sleep 0.5
 print_info "Allowing Kubelet API" 0
 sudo ufw allow 10250/tcp
+printf "\n"
+sleep 0.5
 print_info "Allowing kube-scheduler" 0
 sudo ufw allow 10259/tcp
+printf "\n"
+sleep 0.5
 print_info "Allowing kube-controller-manager" 0
 sudo ufw allow 10257/tcp
+printf "\n"
+sleep 0.5
 print_info "Allowing kube-proxy" 0
 sudo ufw allow 10256/tcp
+printf "\n"
+sleep 0.5
 print_info "Allowing NodePort Services" 0
 sudo ufw allow 30000:32767/tcp
 print_success "Done!"
@@ -103,6 +120,7 @@ echo "deb [signed-by=/etc/apt/keyrings/cri-o-apt-keyring.gpg] https://pkgs.k8s.i
 sudo apt-get update
 sudo apt-get install -y cri-o
 print_info "Enabling CRI-O" 0
+sleep 1
 sudo systemctl start crio.service
 print_success "Done!"
 
@@ -111,8 +129,11 @@ sleep 1
 print_info "Installing Kubernetes" 1
 curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo apt update
 sudo apt-get install -y kubelet kubeadm kubectl
+sleep 1
 sudo apt-mark hold kubelet kubeadm kubectl
+sleep 1
 sudo systemctl enable --now kubelet
 print_success "Done!"
 
