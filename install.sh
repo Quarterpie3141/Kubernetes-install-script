@@ -21,54 +21,54 @@ print_success() {
 
 echo "Starting install script"
 
-#if [[ "$is_control_plane" =~ ^([nN][oO]?|[nN])$ ]]; then
-#fi
+if [[ "$is_control_plane" =~ ^([nN][oO]?|[nN])$ ]]; then
+fi
+read -p "Is this node a control plane(Y/n):" is_control_plane
+is_control_plane=${is_control_plane:-Y}
+if [[ "$is_control_plane" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+    read -p "did you want to set up a control plane endpoint [--control-plane-endpoint]? (y/N):" control_plane_endpoint
+    control_plane_endpoint=${control_plane_endpoint:-N}
+    if [[ "$is_control_plane" =~ ^([nN][oO]?|[nN])$ ]]; then
+       read -p "enter your endpoint address (ip address, domain name)" endpoint_address
+    fi
+fi
+read -p "what version of kubernates are you using(v1.31)" kubernetes_version
+kubernetes_version=${kubernetes_version:-v1.31}
 
-#read -p "Is this node a control plane(Y/n):" is_control_plane
-#is_control_plane=${is_control_plane:-Y}
-#if [[ "$is_control_plane" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-#    read -p "did you want to set up a control plane endpoint [--control-plane-endpoint]? (y/N):" control_plane_endpoint
-#    control_plane_endpoint=${control_plane_endpoint:-N}
-#    if [[ "$is_control_plane" =~ ^([nN][oO]?|[nN])$ ]]; then
-#       read -p "enter your endpoint address (ip address, domain name)" endpoint_address
-#    fi
-#fi
+read -p "what container runtime are you using[cri-o | docker | containerd](cri-o)" container_runtime
+echo "kubernetes will use the container runtime interface CRI, by default,if you are using the docker container runtime, please manually configure the cri-dockerd CRI"
 
-#read -p "what version of kubernates are you using(v1.31)" kubernetes_version
-#kubernetes_version=${kubernetes_version:-v1.31}
-#
-#read -p "what container runtime are you using[cri-o | docker | containerd](cri-o)" container_runtime
-#echo "kubernetes will use the container runtime interface CRI, by default,if you are using the docker container runtime, please manually configure the cri-dockerd CRI"
-#
-#container_runtime=${container_runtime:-cri-o}
-#
-#case "$container_runtime" in
-#    cri-o)
-#        echo "You selected CRI-O as the container runtime."
-#        read -p "What version of CRI-O are you using(v1.30)" cri_o_vers
-#        ;;
-#    docker)
-#        echo "You selected Docker as the container runtime."
-#
-#        ;;
-#    containerd)
-#        echo "You selected Containerd as the container runtime."
-#
-#        ;;
-#    *)
-#        echo "Invalid input. Please choose between cri-o, docker, or containerd."
-#        exit 1  
-#        ;;
-#esac
-#
-#
-#if [[ "$is_control_plane" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-#    read -p "what container container network interface(CNI) are you using [calcio | other](calico):" cni
-#    read -p "what is your pod network CIDR[--pod-network-cidr] (192.168.0.0/16)" cni_cidr
-#    read -p "did you want to taint this control plane?(y/N)" is_tainted
-#fi
-#
-#read -p "what are your desired node ports?(30000:32767/tcp)" node_ports
+container_runtime=${container_runtime:-cri-o}
+case "$container_runtime" in
+    cri-o)
+        echo "You selected CRI-O as the container runtime."
+        read -p "What version of CRI-O are you using(v1.30)" cri_o_vers
+        ;;
+    docker)
+        echo "You selected Docker as the container runtime."
+        echo "docker is not support yet, you will have to manually install docker and dokerd-cni manually"
+        ;;
+    containerd)
+        echo "You selected Containerd as the container runtime."
+        echo "containered is not supported yet, you will have to install containerd manually"
+        ;;
+    *)
+        echo "Invalid input. Please choose between cri-o, docker, or containerd."
+        exit 1  
+        ;;
+esac
+
+
+if [[ "$is_control_plane" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+    read -p "what container container network interface(CNI) are you using [calcio | other](calico):" cni
+    cni=${cni:-calico}
+    read -p "what is your pod network CIDR[--pod-network-cidr] (192.168.0.0/16)" cni_cidr
+    cni_cidr=${cni_cidr:-192.168.0.0/16}
+    read -p "did you want to taint this control plane?(y/N)" is_tainted
+    is_tainted=${is_tainted:-N}
+fi
+read -p "what are your desired node ports?(30000:32767/tcp)" node_ports
+node_ports=${node_ports:-30000:32767/tcp}
 
 
 printf "Starting the installation process in \n"
@@ -164,10 +164,15 @@ sleep 0.5
     sudo ufw allow 179/tcp
     printf "\n"
     sleep 0.5
+    print_info "Allowing Typha" 0
+    sudo ufw allow 5473/tcp
+    printf "\n"
+    sleep 0.5
 #fi
 print_info "Allowing NodePort Services" 0
 sudo ufw allow 30000:32767/tcp
 print_success "Done!"
+sudo ufw enable
 
 sleep 1
 
@@ -195,7 +200,7 @@ sleep 1
 sudo systemctl enable --now kubelet
 print_success "Done!"
 
-print_info "Pulling required config images" 1
+print_info "Pulling required config images, this may take a few minutes" 1
 kubeadm config images pull 
 print_success "Done!"
 
