@@ -1,6 +1,6 @@
 # Kubernetes Installation Script
 
-This Bash script automates the setup of a Kubernetes node, either as a control plane or a worker node, on Debian-based Linux distributions that use the `apt` package manager. The script allows you to customise the necessary settings to bootstrap or join your node to a kubernetes cluster
+This Bash script automates the setup of a Kubernetes node, either as a control plane or a worker node, on Debian-based Linux distributions that use the `apt` package manager. It allows you to customise the necessary settings to bootstrap or join your node to a kubernetes cluster.
 
 ## Features
 
