@@ -1,12 +1,12 @@
 # Kubernetes Installation Script
 
-This Bash script automates the setup of a Kubernetes node, either as a control plane or a worker node, on debian based linux distros that use the `apt` package manager. The script allows you to customise the necessary settings to bootstrap or join your node to a kubernetes cluster
+This Bash script automates the setup of a Kubernetes node, either as a control plane or a worker node, on Debian-based Linux distributions that use the `apt` package manager. The script allows you to customise the necessary settings to bootstrap or join your node to a kubernetes cluster
 
 ## Features
 
 - **Control Plane or Worker Node Setup**: Option to configure the node as a control plane or a worker node.
-- **Option to Initalise a High Avalibilty Cluster**: You can point you control plane endpoint to a  virtual ip for highly avalible clusters.
-- **Container Runtime Configuration**: Supports `cri-o`, `containerd`, or other container runtimes(you will have to manually install the neccessary files for other ontainer runtimes).
+- **Option to Initalise a High Availability Cluster**: You can point your control plane endpoint to a  virtual ip for highly avalible clusters.
+- **Container Runtime Configuration**: Supports `cri-o`, `containerd`, or other container runtimes(you will have to manually install the necessary files for other container runtimes).
 - **CNI Setup**: Automatic setup for Calico or manual setup for other CNIs.
 - **Firewall Configuration**: Installs and configures UFW with necessary Kubernetes ports.
 - **Kubernetes Installation**: Installs specific versions of Kubernetes components (`kubeadm`, `kubelet`, `kubectl`).
@@ -20,7 +20,7 @@ This Bash script automates the setup of a Kubernetes node, either as a control p
 
 if you are joining the node to an existing cluster then you will also need:
 
-- Control plane endpoint(including the port)  
+- Control plane endpoint (including the port) 
 - Cluster token 
 
 you can generate a cluster token by running `kubeadm token create`
@@ -41,14 +41,14 @@ you can generate a cluster token by running `kubeadm token create`
 
 3. Make the script executable:
     ```bash
-    $ chmod +x ./kubernetaes-install.sh
+    $ chmod +x ./kubernetes-install.sh
     ```
 
 4. Run the script
     ```bash
     $ ./kubernetes-install.sh
     ```
-5. follow the CLI prompts to configure your cluster(see below)
+5. Follow the CLI prompts to configure your cluster(see below)
 
 
 
@@ -68,7 +68,7 @@ you can generate a cluster token by running `kubeadm token create`
 
 <sub>* You can find the most recent version of kuberentes [here](https://kubernetes.io/releases/).</sub><br />
 <sub>** You can find the most recent version of CRI-O [here](https://github.com/cri-o/packaging/blob/main/README.md#available-streams).</sub><br />
-<sub>*** The default value is the reccomended value for Calico, please read the installation instructions of your chosen CNI for more info on the appropite CIDR.</sub>
+<sub>*** The default value is the recommended value for Calico, please read the installation instructions of your chosen CNI for more info on the appropriate CIDR.</sub>
 
 
 ## Troubleshooting
@@ -78,7 +78,7 @@ If the script fails at any point:
 - Ensure you have an active internet connection.
 - Check if the necessary ports are open on your firewall(`ufw status`).
 - Verify that the correct Kubernetes and container runtime versions are specified.
-- Use `kubectl get pods -n kube-system` and `kubectl describe pod -n kubesystem <pod-name>` to troubleshoot any failed components.
+- Use `kubectl get pods -n kube-system` and `kubectl describe pod -n kube-system <pod-name>` to troubleshoot any failed components.
 - If all else fails then follow the [quick start guide](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/) manually
 
 
