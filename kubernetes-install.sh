@@ -122,12 +122,12 @@ if [[ "$is_control_plane" =~ ^([yY][eE][sS]|[yY])$ ]]; then
         tput rmul
         printf "\n"
         calico_vers=${calico_vers:-v3.28.1}
-        tput smul
-        read -p "What is your pod network CIDR [--pod-network-cidr] (192.168.0.0/16): " cni_cidr
-        tput rmul
-        printf "\n"
-        cni_cidr=${cni_cidr:-192.168.0.0/16}
     fi
+    tput smul
+    read -p "What is your pod network CIDR [--pod-network-cidr] (192.168.0.0/16): " cni_cidr
+    tput rmul
+    printf "\n"
+    cni_cidr=${cni_cidr:-192.168.0.0/16}
     tput smul
     read -p "Did you want to taint this control plane? (y/N): " is_tainted
     tput rmul
