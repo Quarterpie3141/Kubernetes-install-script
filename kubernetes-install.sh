@@ -140,10 +140,6 @@ tput rmul
 printf "\n"
 node_ports=${node_ports:-30000:32767/tcp}
 
-tput smul
-read -p "What are your desired node ports? (30000:32767/tcp): " node_ports
-tput rmul
-
 print_warn "This script will install and enable UFW, which may block SSH connections"
 print_warn "Did you want to let port 22 (ssh) through the firewall?"
 tput smul
