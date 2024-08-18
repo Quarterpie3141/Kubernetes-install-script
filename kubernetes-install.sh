@@ -140,6 +140,18 @@ tput rmul
 printf "\n"
 node_ports=${node_ports:-30000:32767/tcp}
 
+tput smul
+read -p "What are your desired node ports? (30000:32767/tcp): " node_ports
+tput rmul
+
+print_warn "This script will install and enable UFW, which may block SSH connections"
+print_warn "Did you want to let port 22 (ssh) through the firewall?"
+tput smul
+read -p "(N/y): " allow_22
+allow_22=${allow_22:-n}
+tput rmul
+
+
 print_all_values() {
     echo "Are the following values correct?:"
     echo "Is control plane: $is_control_plane"
@@ -160,6 +172,7 @@ print_all_values() {
         echo "CRI-O version: $cri_o_vers"
     fi
     echo "Node ports: $node_ports"
+    echo "Allow SSH: $allow_22"
 }
 printf "\n \n \n"
 print_all_values
@@ -270,8 +283,17 @@ if [[ "$cni" =~ ^(calico)$ ]]; then
 fi
 print_info "Allowing NodePort Services..." 0
 sudo ufw allow "$node_ports"
+
+if [[ "$allow_22" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+    print_info "Allowing SSH..." 0
+    sudo ufw allow 22/tcp
+    printf "\n"
+    sleep 0.5
+fi
 print_success "Done!"
-sudo ufw enable
+print_info "Enabling Firewall..." 1
+yes | sudo ufw enable
+print_success "Done!"
 
 sleep 1
 
