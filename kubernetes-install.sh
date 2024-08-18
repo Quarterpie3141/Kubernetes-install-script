@@ -303,6 +303,7 @@ if [[ $container_runtime =~ ^(cri-o)$ ]]; then
     print_info "Enabling CRI-O..." 0
     sleep 1
     sudo systemctl enable crio.service
+    sudo systemctl start crio.service
     print_success "Done!"
 
 elif [[ $container_runtime =~ ^(containerd)$ ]]; then
@@ -312,6 +313,7 @@ elif [[ $container_runtime =~ ^(containerd)$ ]]; then
     print_info "Enabling containerd..." 0
     sleep 1
     sudo systemctl enable containerd.service
+    sudo systemctl start containerd.service
     print_success "Done!"
 fi
 if [[ "$container_runtime" != "other" ]]; then
