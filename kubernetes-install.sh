@@ -305,7 +305,7 @@ if [[ $cri == "crio" ]]; then
     sudo systemctl start crio.service
     print_success "Done!"
 
-elif [[$cri == "containerd"]]; then
+elif [[ $cri == "containerd" ]]; then
     sudo apt-get install -y software-properties-common curl apt-transport-https ca-certificates gpg
     sudo apt-get update
     sudo apt-get install -y containerd
