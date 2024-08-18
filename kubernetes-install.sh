@@ -275,7 +275,7 @@ sudo ufw enable
 
 sleep 1
 
-if [$cri = crio]; then
+if [$cri = "crio"]; then
     print_info "Installing CRI-O..." 1
     sudo apt-get install -y software-properties-common curl apt-transport-https ca-certificates gpg
     sudo curl -fsSL https://pkgs.k8s.io/addons:/cri-o:/stable:/$cri_o_vers/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/cri-o-apt-keyring.gpg
@@ -287,7 +287,7 @@ if [$cri = crio]; then
     sudo systemctl start crio.service
     print_success "Done!"
 
-elif [$cri = containerd]; then
+elif [$cri = "containerd"]; then
     sudo apt-get install -y software-properties-common curl apt-transport-https ca-certificates gpg
     sudo apt-get update
     sudo apt-get install -y containerd
