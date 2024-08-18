@@ -348,7 +348,7 @@ if [[ "$container_runtime" != "other" ]]; then
         sudo chown $(id -u):$(id -g) $HOME/.kube/config
         echo "Post-init script complete."
 
-        if [[ "$is_tainted" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+        if [[ "$is_tainted" =~ ^([Nn][Oo]|[nN])$ ]]; then
             kubectl taint nodes --all node-role.kubernetes.io/control-plane-
         fi
 
