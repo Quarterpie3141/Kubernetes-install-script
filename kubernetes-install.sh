@@ -293,7 +293,7 @@ print_success "Done!"
 
 sleep 1
 
-if [[ $cri == "cri-o" ]]; then
+if [[ $cri =~ ^(cri-o)$ ]]; then
     print_info "Installing CRI-O..." 1
     sudo apt-get install -y software-properties-common curl apt-transport-https ca-certificates gpg
     sudo curl -fsSL https://pkgs.k8s.io/addons:/cri-o:/stable:/$cri_o_vers/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/cri-o-apt-keyring.gpg
@@ -302,19 +302,18 @@ if [[ $cri == "cri-o" ]]; then
     sudo apt-get install -y cri-o
     print_info "Enabling CRI-O..." 0
     sleep 1
-    sudo systemctl start crio.service
+    sudo systemctl enable crio.service
     print_success "Done!"
 
-elif [[ $cri == "containerd" ]]; then
+elif [[ $cri =~ ^(containerd)$ ]]; then
     sudo apt-get install -y software-properties-common curl apt-transport-https ca-certificates gpg
     sudo apt-get update
     sudo apt-get install -y containerd
     print_info "Enabling containerd..." 0
     sleep 1
-    sudo systemctl start containerd.service
+    sudo systemctl enable containerd.service
     print_success "Done!"
 fi
-
 if [[ "$cri" != "other" ]]; then
     sleep 1
     print_info "Installing Kubernetes..." 1
