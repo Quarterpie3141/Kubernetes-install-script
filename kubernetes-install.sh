@@ -29,67 +29,78 @@ print_warn() {
 }
 
 
-
+tput smul && tput setaf 2
 echo "Starting install script"
-tput smul && tput setaf 6
+tput smul && tput setaf 7
 read -p "Is this node a control plane(Y/n): " is_control_plane
 tput rmul && tput setaf 7
+printf "\n"
 is_control_plane=${is_control_plane:-Y}
 
 if [[ "$is_control_plane" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-    tput smul && tput setaf 6
+    tput smul
     read -p "Did you want to set up a control plane endpoint [--control-plane-endpoint]? (y/N): " control_plane_endpoint
-    tput rmul && tput setaf 7
+    tput rmul
+    printf "\n"
     control_plane_endpoint=${control_plane_endpoint:-N}
     if [[ "$control_plane_endpoint" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-        tput smul && tput setaf 6
+        tput smul
         read -p "Enter your endpoint address: " endpoint_address
-        tput rmul && tput setaf 7
+        tput rmul
+        printf "\n"
     fi
 else
     while [ -z "$control_plane_address" ]; do
-        tput smul && tput setaf 6
+        tput smul7
         read -p "What is your control plane address and port [<ip>:<port> | <fqdn>:<port>]? " control_plane_address
-        tput rmul && tput setaf 7
+        tput rmul
+        printf "\n"
         if [ -z "$control_plane_address" ]; then
-            tput smul && tput setaf 6
+            tput smul
             echo "Control plane address cannot be empty. Please enter a IP or FQDN."
-            tput rmul && tput setaf 7
+            tput rmul
+            printf "\n"
         fi
     done
 
     while [ -z "$cluster_token" ]; do
-        tput smul && tput setaf 6    
+        tput smul    
         read -p "What is your existing cluster token [kubeadm token create]? " cluster_token
-        tput rmul && tput setaf 7
+        tput rmul
+        printf "\n"
         if [ -z "$cluster_token" ]; then
             print_warn "Cluster token cannot be empty. Please enter a token."
         fi
     done
 fi
-tput smul && tput setaf 6
+tput smul
 read -p "What version of Kubernetes are you using(v1.31): " kubernetes_version
 kubernetes_version=${kubernetes_version:-v1.31}
-tput rmul && tput setaf 7
-tput smul && tput setaf 6
+tput rmul
+printf "\n"
+tput smul
 read -p "What container runtime are you using [cri-o | containerd | other](cri-o): " container_runtime
-tput rmul && tput setaf 7
+tput rmul
+printf "\n"
 container_runtime=${container_runtime:-cri-o}
 
 case "$container_runtime" in
     cri-o)
         print_warn "You selected CRI-O as the container runtime."
-        tput smul && tput setaf 6
+        tput smul
         read -p "What version of CRI-O are you using (v1.30): " cri_o_vers
-        tput rmul && tput setaf 7
+        tput rmul
+        printf "\n"
         cri_o_vers=${cri_o_vers:-v1.30}
         ;;
     containerd)
         print_warn "You selected Containerd as the container runtime."
+        printf "\n"
         ;;
     other)
         print_warn "You will have to manually install your chosen container runtime."
         print_warn  "If you are using Docker, please manually configure the cri-dockerd CRI."
+        printf "\n"
         ;;
     *)
         print_warn "Invalid input. Please choose between cri-o, other, or containerd."
@@ -98,30 +109,35 @@ case "$container_runtime" in
 esac
 
 if [[ "$is_control_plane" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+    tput smul
     read -p "What container network interface (CNI) are you using [calico | other](calico): " cni
-    tput smul && tput setaf 6
+    tput rmul
+    printf "\n"
     cni=${cni:-calico}
-    tput rmul && tput setaf 7
     if [[ "$cni" =~ ^(other)$ ]]; then
         print_warn "You will have to manually install your desired CNI after this script finishes."
     else
-        tput smul && tput setaf 6
+        tput smul
         read -p "What version of Calico are you using? (v3.28.1): " calico_vers
-        tput rmul && tput setaf 7
+        tput rmul
+        printf "\n"
         calico_vers=${calico_vers:-v3.28.1}
-        tput smul && tput setaf 6
+        tput smul
         read -p "What is your pod network CIDR [--pod-network-cidr] (192.168.0.0/16): " cni_cidr
-        tput rmul && tput setaf 7
+        tput rmul
+        printf "\n"
         cni_cidr=${cni_cidr:-192.168.0.0/16}
     fi
-    tput smul && tput setaf 6
+    tput smul
     read -p "Did you want to taint this control plane? (y/N): " is_tainted
-    tput rmul && tput setaf 7
+    tput rmul
+    printf "\n"
     is_tainted=${is_tainted:-N}
 fi
-tput smul && tput setaf 6
+tput smul
 read -p "What are your desired node ports? (30000:32767/tcp): " node_ports
-tput rmul && tput setaf 7
+tput rmul
+printf "\n"
 node_ports=${node_ports:-30000:32767/tcp}
 
 print_all_values() {
@@ -145,7 +161,7 @@ print_all_values() {
     fi
     echo "Node ports: $node_ports"
 }
-
+printf "\n \n \n"
 print_all_values
 
 read -p "(Y/n): Are the above values correct? " final_check
@@ -259,7 +275,7 @@ sudo ufw enable
 
 sleep 1
 
-if ($cri = crio); then
+if [$cri = crio]; then
     print_info "Installing CRI-O..." 1
     sudo apt-get install -y software-properties-common curl apt-transport-https ca-certificates gpg
     sudo curl -fsSL https://pkgs.k8s.io/addons:/cri-o:/stable:/$cri_o_vers/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/cri-o-apt-keyring.gpg
@@ -271,7 +287,7 @@ if ($cri = crio); then
     sudo systemctl start crio.service
     print_success "Done!"
 
-elif ($cri = containerd); then
+elif [$cri = containerd]; then
     sudo apt-get install -y software-properties-common curl apt-transport-https ca-certificates gpg
     sudo apt-get update
     sudo apt-get install -y containerd
