@@ -361,6 +361,6 @@ if [[ "$cri" != "other" ]]; then
     kubectl get nodes -o wide
 
     echo "Your Kubernetes node has been initialized with no errors."
-elif
+else
     echo "Your node is ready to have kubernetes installed"
 fi
