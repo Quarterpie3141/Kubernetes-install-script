@@ -279,7 +279,8 @@ if [[ "$cni" =~ ^(calico)$ ]]; then
 fi
 print_info "Allowing NodePort Services..." 0
 sudo ufw allow "$node_ports"
-
+sleep 0.5
+printf "\n"
 if [[ "$allow_22" =~ ^([yY][eE][sS]|[yY])$ ]]; then
     print_info "Allowing SSH..." 0
     sudo ufw allow 22/tcp
@@ -332,14 +333,14 @@ if [[ "$container_runtime" != "other" ]]; then
     print_success "Done!"
 
     print_info "Pulling required config images, this may take a few minutes..." 1
-    kubeadm config images pull 
+    sudo kubeadm config images pull 
     print_success "Done!"
 
     print_success "Kubeadm is ready to use"
 
     if [[ "$is_control_plane" =~ ^([yY][eE][sS]|[yY])$ ]]; then
         echo "Initializing cluster..."
-        kubeadm init --control-plane-endpoint "$endpoint_address" --pod-network-cidr "$cni_cidr"
+        sudo kubeadm init --control-plane-endpoint "$endpoint_address" --pod-network-cidr "$cni_cidr"
         echo "Cluster initialization complete."
 
         echo "Running post-init script..."
@@ -358,7 +359,7 @@ if [[ "$container_runtime" != "other" ]]; then
         fi
     else
         ca_cert=$(openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //')
-        kubeadm join "$control_plane_address" --token "$cluster_token" --discovery-token-ca-cert-hash sha256:"$ca_cert"
+        sudo kubeadm join "$control_plane_address" --token "$cluster_token" --discovery-token-ca-cert-hash sha256:"$ca_cert"
     fi
 
     kubectl get nodes -o wide
