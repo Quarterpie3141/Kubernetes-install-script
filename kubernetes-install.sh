@@ -369,12 +369,12 @@ if [[ "$container_runtime" != "other" ]]; then
             kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/$calico_vers/manifests/tigera-operator.yaml
             kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/$calico_vers/manifests/custom-resources.yaml
         fi
+        kubectl get nodes -o wide
     else
-        
         sudo kubeadm join "$control_plane_address" --token "$cluster_token" --discovery-token-ca-cert-hash sha256:"$ca_cert"
     fi
 
-    kubectl get nodes -o wide
+    
 
     echo "Your Kubernetes node has been initialized with no errors."
 else
