@@ -31,22 +31,22 @@ you can generate a cluster token by running `kubeadm token create`
 
 1. Install `curl` if your distro doesn't have it:
     ```bash
-    $ apt install curl
+    apt install curl
     ```
 
 2. Download the script:
     ```bash
-    $ curl -O https://raw.githubusercontent.com/Quarterpie3141/Kubernetes-install-script/main/kubernetes-install.sh
+    curl -O https://raw.githubusercontent.com/Quarterpie3141/Kubernetes-install-script/main/kubernetes-install.sh
     ```
 
 3. Make the script executable:
     ```bash
-    $ chmod +x ./kubernetes-install.sh
+    chmod +x ./kubernetes-install.sh
     ```
 
 4. Run the script
     ```bash
-    $ ./kubernetes-install.sh
+    ./kubernetes-install.sh
     ```
 5. Follow the CLI prompts to configure your cluster(see below)
 
