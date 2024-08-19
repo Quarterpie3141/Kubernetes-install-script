@@ -62,6 +62,7 @@ else
             printf "\n"
         fi
     done
+    
 
     while [ -z "$cluster_token" ]; do
         tput smul    
@@ -70,6 +71,17 @@ else
         printf "\n"
         if [ -z "$cluster_token" ]; then
             print_warn "Cluster token cannot be empty. Please enter a token."
+            printf "\n"
+        fi
+    done
+
+    while [ -z "$ca_cert" ]; do
+        tput smul    
+        read -p 'What is your existing cluster ca_cert hash [ca_cert=$(openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //')]?' ca_cert
+        tput rmul
+        printf "\n"
+        if [ -z "$ca_cert" ]; then
+            print_warn "CA certificate hash cannot be empty."
         fi
     done
 fi
@@ -358,7 +370,7 @@ if [[ "$container_runtime" != "other" ]]; then
             kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/$calico_vers/manifests/custom-resources.yaml
         fi
     else
-        ca_cert=$(openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //')
+        
         sudo kubeadm join "$control_plane_address" --token "$cluster_token" --discovery-token-ca-cert-hash sha256:"$ca_cert"
     fi
 
