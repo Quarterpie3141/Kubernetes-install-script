@@ -77,7 +77,7 @@ else
 
     while [ -z "$ca_cert" ]; do
         tput smul    
-        read -p 'What is your existing cluster ca_cert hash [ca_cert=$(openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //')]?' ca_cert
+        read -p 'What is your existing cluster ca_cert hash [run `openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.\* //`]?' ca_cert
         tput rmul
         printf "\n"
         if [ -z "$ca_cert" ]; then
