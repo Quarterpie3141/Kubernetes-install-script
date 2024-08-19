@@ -51,7 +51,7 @@ if [[ "$is_control_plane" =~ ^([yY][eE][sS]|[yY])$ ]]; then
     fi
 else
     while [ -z "$control_plane_address" ]; do
-        tput smul7
+        tput smul
         read -p "What is your control plane address and port [<ip>:<port> | <fqdn>:<port>]? " control_plane_address
         tput rmul
         printf "\n"
